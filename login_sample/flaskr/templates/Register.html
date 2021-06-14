@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% from "_formhelpers.html" import render_field %}
+{% block title %}Register{% endblock %}
+{% block content %}
+<h1>Register User</h1>
+<form method="POST">
+    {{ form.csrf_token }}
+    {{ render_field(form.username) }}
+    {{ render_field(form.email) }}
+    {{ render_field(form.password) }}
+    {{ render_field(form.password_confirm) }}
+    {{ form.submit() }}
+</form>
+{% endblock %}
