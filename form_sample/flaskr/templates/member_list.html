@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}Member List{% endblock %}
+{% block content %}
+<div>
+    <h1>Member List</h1>
+    <table>
+        <tr>
+            <th>name</th>
+            <th>age</th>
+            <th>comment</th>
+            <th>delete</th>
+        </tr>
+        {% for member in members %}
+        <tr>
+            <td><a href="{{ url_for('update_member', member_id=member.id) }}">{{ member.name }}</a></td>
+            <td>{{ member.age }}</td>
+            <td>{{ member.comment }}</td>
+            <td>
+                <form method='POST' action="{{ url_for('delete_member') }}">
+                    {{ form.csrf_token }}
+                    {{ form.id(value=member.id) }}
+                    {{ form.submit() }}
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </table> 
+</div>
+{% endblock %}

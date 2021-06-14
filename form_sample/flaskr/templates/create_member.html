@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% from "_formhelpers.html" import render_field %}
+{% block title %}form{% endblock %}
+{% block content %}
+<div>
+    <h1>Create Member</h1>
+    <form method="POST">
+        {{ form.csrf_token }}
+        {{ render_field(form.name) }}
+        {{ render_field(form.age) }}
+        {{ render_field(form.comment) }}
+        {{ form.submit() }}
+    </form>
+</div>
+
+{% endblock %}
