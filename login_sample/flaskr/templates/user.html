@@ -2,4 +2,25 @@
 {% block title %}User{% endblock %}
 {% block content %}
 <h1>User Page</h1>
+<p>Ajax Sample</p>
+<p>
+    <input type="text" size=5 name=a> +
+    <input type="text" size=5 name=b> =
+    <span id=result>?</span>
+</p>
+<a href="#" id="calculate">Calculate</a>
+{% endblock %}
+{% block script %}
+<script>
+    $(function(){
+        $('a#calculate').bind('click', function(){
+            $.getJSON('/_add_numbers', {
+                a: $('input[name="a"]').val(),
+                b: $('input[name="b"]').val()
+            }, function(data){
+                $('#result').text(data.result)
+            });
+        });
+    });
+</script>
 {% endblock %}
