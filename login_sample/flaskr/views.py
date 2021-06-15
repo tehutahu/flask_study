@@ -1,4 +1,4 @@
-from flask import Blueprint, request, render_template, redirect, url_for
+from flask import Blueprint, request, render_template, redirect, url_for, jsonify
 from flask_login import login_user, login_required, logout_user
 from flaskr.form import LoginForm, RegisterForm
 from flaskr.models import User
@@ -49,3 +49,9 @@ def register():
 @login_required
 def user():
     return render_template('user.html')
+
+@bp.route('/_add_numbers')
+def add_numbers():
+    a = request.args.get('a', 0, type=int)
+    b = request.args.get('b', 0, type=int)
+    return jsonify({'result': a + b})
