@@ -27,3 +27,11 @@ class ResetPasswordForm(Form):
     def validate_password(self, field):
         if len(field.data) < 8:
             raise ValidationError('Too short. Password has to more than 8 characters')
+
+class ForgotPasswordForm(Form):
+    email = StringField('email: ', validators=[DataRequired(), Email()])
+    submit = SubmitField('Update password')
+
+    def validate_email(self, field):
+        if not User.select_by_email(field.data):
+            raise ValidationError('Email address is not registered')

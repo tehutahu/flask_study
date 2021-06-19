@@ -7,8 +7,8 @@
         {% endif %}
     </div>
     <div class="col-lg-4 offset-lg-2">
-        <p>User name: {{ current_user.user_name }}</p>
-        <p>User name: {{ current_user.email }}</p>
+        <p>User name: {{ current_user.username }}</p>
+        <p>Email: {{ current_user.email }}</p>
     </div>
     {% else %}
         <p>You have to Login or Register</p>

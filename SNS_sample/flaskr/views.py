@@ -5,7 +5,7 @@ from flask_login import login_user, login_required, logout_user
 from flaskr.models import (
     User, PasswordResetToken, 
 )
-from flaskr.forms import LoginForm, RegisterForm, ResetPasswordForm
+from flaskr.forms import LoginForm, RegisterForm, ResetPasswordForm, ForgotPasswordForm
 from flaskr import db
 
 
@@ -71,3 +71,17 @@ def reset_password(token):
         flash('Updated password')
         return redirect(url_for('app.login'))
     return render_template('reset_password.html', form=form)
+
+@bp.route('/forgot_password', methods=['GET', 'POST'])
+def forgot_password():
+    form = ForgotPasswordForm(request.form)
+    if request.method == 'POST' and form.validate():
+        email = form.email.data
+        user = User.select_by_email(email)
+        if user:
+            token = PasswordResetToken.publish_token(user)
+            print(f'Password set URL: http://127.0.0.1:5000/reset_password/{token}')
+            flash('Send password set URL')
+        else:
+            flash('User is not exist')
+    return render_template('forgot_password.html', form=form)
