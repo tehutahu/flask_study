@@ -1,13 +1,16 @@
+import os
+from datetime import datetime
 from flask import (
-    Blueprint, abort, request, render_template, redirect, url_for, flash, jsonify
+    Blueprint, abort, request, render_template, redirect, url_for, flash, jsonify, current_app
 )
-from flask_login import login_user, login_required, logout_user
+from flask_login import login_user, login_required, logout_user, current_user
 from flaskr.models import (
     User, PasswordResetToken, 
 )
-from flaskr.forms import LoginForm, RegisterForm, ResetPasswordForm, ForgotPasswordForm
+from flaskr.forms import (
+    LoginForm, RegisterForm, ResetPasswordForm, ForgotPasswordForm, UserForm
+)
 from flaskr import db
-
 
 bp = Blueprint('app', __name__, url_prefix='')
 
@@ -85,3 +88,30 @@ def forgot_password():
         else:
             flash('User is not exist')
     return render_template('forgot_password.html', form=form)
+
+@bp.route('/user', methods=['GET', 'POST'])
+@login_required
+def user():
+    form = UserForm(request.form)
+    if request.method == 'POST' and form.validate():
+        user_id = current_user.get_id()
+        user = User.select_by_id(user_id)
+        with db.session.begin(subtransactions=True):
+            user.username = form.username.data
+            user.email = form.email.data
+            file = request.files[form.picture_path.name].read()
+            if file:
+                if user.picture_path:
+                    try:
+                        os.remove(os.path.join(current_app.config['STATIC'], user.picture_path))
+                    except FileNotFoundError as e:
+                        print(e)
+                filename = user_id + '_' + \
+                    str(int(datetime.now().timestamp())) + '.jpg'
+                user.picture_path = os.path.join(current_app.config['IMG_DIR'], filename)
+                picture_path = os.path.join(current_app.config['STATIC'], user.picture_path)
+                open(picture_path, 'wb').write(file)
+        db.session.commit()
+        flash('Success updated')
+    return render_template('user.html', form=form)
+

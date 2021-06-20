@@ -9,6 +9,7 @@ login_manager.login_view = 'app.view'
 login_manager.login_messeage = 'you have to login.'
 
 base_dir = os.path.abspath(os.path.dirname(__name__))
+flask_dir = os.path.abspath(os.path.dirname(__file__))
 db = SQLAlchemy()
 migrate = Migrate()
 
@@ -16,6 +17,9 @@ def create_app():
     app = Flask(__name__)
     app.config['DEBUG'] = True
     app.config['SECRET_KEY'] = 'mylogin'
+    app.config['FLASK_DIR'] = flask_dir
+    app.config['STATIC'] = os.path.join(flask_dir, 'static')
+    app.config['IMG_DIR'] = 'user_image/'
 
     app.config['SQLALCHEMY_DATABASE_URI'] = \
         'sqlite:///' + os.path.join(base_dir, 'data.sqlite')

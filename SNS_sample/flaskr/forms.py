@@ -3,6 +3,9 @@ from wtforms.fields import (
     StringField, PasswordField, SubmitField, HiddenField, FileField)
 from wtforms.validators import DataRequired, Email, EqualTo
 from wtforms import ValidationError
+from flask_login import current_user
+from flask import flash
+
 from flaskr.models import User
 
 class LoginForm(Form):
@@ -35,3 +38,19 @@ class ForgotPasswordForm(Form):
     def validate_email(self, field):
         if not User.select_by_email(field.data):
             raise ValidationError('Email address is not registered')
+
+class UserForm(Form):
+    email = StringField('email: ', validators=[DataRequired(), Email('Illigal email')])
+    username = StringField('username: ', validators=[DataRequired()])
+    picture_path = FileField('update file')
+    submit = SubmitField('Update information')
+
+    def validate(self):
+        if not super(Form, self).validate():
+            return False
+        user = User.select_by_email(self.email.data)
+        if user:
+            if user.id != int(current_user.get_id()):
+                flash('Email address is already registered')
+                return False
+        return True
