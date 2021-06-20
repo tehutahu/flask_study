@@ -140,3 +140,5 @@ cython_debug/
 # original
 migrations/
 *.sqlite
+*.jpg
+.vscode/
