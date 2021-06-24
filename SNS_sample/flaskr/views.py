@@ -33,6 +33,7 @@ def login():
             login_user(user, remember=True)
             next = request.args.get('next')
             if not next:
+                flash('welcome')
                 next = url_for('app.home')
             return redirect(next)
         elif not user:
@@ -113,5 +114,6 @@ def user():
                 open(picture_path, 'wb').write(file)
         db.session.commit()
         flash('Success updated')
+        return redirect(url_for('app.home'))
     return render_template('user.html', form=form)
 

@@ -1,5 +1,8 @@
 {% extends "base.html" %}
 {% block content %}
+{% for message in get_flashed_messages() %}
+{{ message }}
+{% endfor %}
     {% if current_user.is_authenticated %}
     <div class="col-lg-4 offset-lg-2">
         {% if current_user.picture_path %}
