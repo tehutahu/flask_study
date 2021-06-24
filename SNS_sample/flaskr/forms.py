@@ -54,3 +54,12 @@ class UserForm(Form):
                 flash('Email address is already registered')
                 return False
         return True
+
+class ChangePasswordForm(Form):
+    password = PasswordField('password: ', validators=[DataRequired(), EqualTo('confirm_password', message='password not match')])
+    confirm_password = PasswordField('confirm_password: ', validators=[DataRequired()])
+    submit = SubmitField('Update password')
+
+    def validate_password(self, field):
+        if len(field.data) < 8:
+            raise ValidationError('Too short. Password has to more than 8 characters')

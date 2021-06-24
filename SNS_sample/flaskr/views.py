@@ -8,7 +8,7 @@ from flaskr.models import (
     User, PasswordResetToken, 
 )
 from flaskr.forms import (
-    LoginForm, RegisterForm, ResetPasswordForm, ForgotPasswordForm, UserForm
+    LoginForm, RegisterForm, ResetPasswordForm, ForgotPasswordForm, UserForm, ChangePasswordForm
 )
 from flaskr import db
 
@@ -116,4 +116,27 @@ def user():
         flash('Success updated')
         return redirect(url_for('app.home'))
     return render_template('user.html', form=form)
+
+@bp.route('/change_password', methods=['GET', 'POST'])
+@login_required
+def change_password():
+    form = ChangePasswordForm(request.form)
+    if request.method == 'POST' and form.validate():
+        user_id = current_user.get_id()
+        user = User.select_by_id(user_id)
+        with db.session.begin(subtransactions=True):
+            password = form.password.data
+            user.save_new_password(password)
+        db.session.commit()
+        flash('Updated password')
+        return redirect(url_for('app.user'))
+    return render_template('change_password.html', form=form)
+
+@bp.app_errorhandler(404)
+def page_not_found(e):
+    return redirect(url_for('app.home'))
+
+@bp.app_errorhandler(500)
+def page_not_found(e):
+    return render_template('500.html'), 500
 

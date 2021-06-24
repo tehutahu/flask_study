@@ -81,7 +81,10 @@ class PasswordResetToken(db.Model):
     def get_user_id_by_token(cls, token):
         now = datetime.now()
         record = cls.query.filter_by(token=str(token)).filter(cls.expire_at > now).first()
-        return record.user_id
+        if record:
+            return record.user_id
+        else:
+            return None
 
     @classmethod
     def delete_token(cls, token): 
