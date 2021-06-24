@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% from "_formhelpers.html" import render_field %}
+{% block title %}Update information{% endblock %}
+{% block content %}
+{% for message in get_flashed_messages() %}
+{{ message }}
+{% endfor %}
+<h1>Update information</h1>
+<div class="row">
+    <form method="POST" enctype="multipart/form-data">
+        {{ form.csrf_token }}
+        {{ render_field(form.email, value=current_user.email) }}
+        {{ render_field(form.username, value=current_user.username) }}
+        {{ render_field(form.picture_path) }}
+        {{ form.submit() }}
+    </form>
+</div>
+{% endblock %}
