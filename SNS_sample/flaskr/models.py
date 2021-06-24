@@ -1,6 +1,6 @@
 from datetime import datetime
 from flask_bcrypt import generate_password_hash, check_password_hash
-from flask_login import UserMixin
+from flask_login import UserMixin, current_user
 
 from datetime import datetime, timedelta
 from uuid import uuid4
@@ -42,6 +42,16 @@ class User(UserMixin, db.Model):
     @classmethod
     def select_by_id(cls, id):
        return cls.query.get(id)
+
+    @classmethod
+    def search_by_name(cls, username):
+        return cls.query.filter(
+            cls.username.like(f'%{username}%'),
+            cls.id != int(current_user.get_id()),
+            cls.is_active == True
+        ).with_entities(
+            cls.id, cls.username, cls.picture_path
+        ).all()
 
     def save_new_password(self, new_password):
         self.password = generate_password_hash(new_password)

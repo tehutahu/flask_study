@@ -63,3 +63,8 @@ class ChangePasswordForm(Form):
     def validate_password(self, field):
         if len(field.data) < 8:
             raise ValidationError('Too short. Password has to more than 8 characters')
+
+
+class UserSearchForm(Form):
+    username = StringField('username: ', validators=[DataRequired()])
+    submit = SubmitField('Search user')
