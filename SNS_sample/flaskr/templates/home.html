@@ -13,6 +13,96 @@
         <p>User name: {{ current_user.username }}</p>
         <p>Email: {{ current_user.email }}</p>
     </div>
+    <div class="col-lg-8 offset-lg-2">
+        <h2>Your Friends</h2>
+        {% if users %}
+        <table class="table table-bordered">
+            <thead>
+                <th>Image</th>
+                <th>Username</th>
+                <th>Send message</th>
+            </thead>
+            <tbody>
+                {% for user in users['friends'] %}
+                <tr>
+                    {% if user.picture_path %}
+                    <td>
+                        <img class="user-img-small" src="{{url_for('static', filename=user.picture_path)}}" alt="Image">
+                    </td>
+                    {% else %}
+                    <td></td>
+                    {% endif %}
+                    <td>{{ user.username }}</td>
+                    <td>Send message</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% endif %}
+    </div>
+    <div class="col-lg-8 offset-lg-2">
+        <h2>Your Requested</h2>
+        {% if users %}
+        <table class="table table-bordered">
+            <thead>
+                <th>Image</th>
+                <th>Username</th>
+                <th>Action</th>
+            </thead>
+            <tbody>
+                {% for user in users['requested'] %}
+                <tr>
+                    {% if user.picture_path %}
+                    <td>
+                        <img class="user-img-small" src="{{url_for('static', filename=user.picture_path)}}" alt="Image">
+                    </td>
+                    {% else %}
+                    <td></td>
+                    {% endif %}
+                    <td>{{ user.username }}</td>
+                    <td>
+                        <form action="{{url_for('app.connect_user')}}" method="POST">
+                            {{ connect_form.csrf_token }}
+                            {{ connect_form.connect_condition(value="accept") }}
+                            {{ connect_form.to_user_id(value=user.id) }}
+                            {{ connect_form.to_username(value=user.username) }}
+                            {{ connect_form.submit(class='btn btn-success', value=("Accept")) }}
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% endif %}
+    </div>
+    <div class="col-lg-8 offset-lg-2">
+        <h2>Your Requesting</h2>
+        {% if users %}
+        <table class="table table-bordered">
+            <thead>
+                <th>Image</th>
+                <th>Username</th>
+                <th>Action</th>
+            </thead>
+            <tbody>
+                {% for user in users['requesting'] %}
+                <tr>
+                    {% if user.picture_path %}
+                    <td>
+                        <img class="user-img-small" src="{{url_for('static', filename=user.picture_path)}}" alt="Image">
+                    </td>
+                    {% else %}
+                    <td></td>
+                    {% endif %}
+                    <td>{{ user.username }}</td>
+                    <td>Requesting</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% endif %}
+    </div>
+
     {% else %}
         <p>You have to Login or Register</p>
     {% endif %}

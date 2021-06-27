@@ -17,7 +17,16 @@ bp = Blueprint('app', __name__, url_prefix='')
 
 @bp.route('/')
 def home():
-    return render_template('home.html')
+    users = None
+    connect_form = ConnectForm()
+    session['back_url'] = 'app.home'
+    if current_user.is_authenticated:
+        users = {
+            'friends':User.select_friends(),
+            'requesting':User.select_requesting(),
+            'requested':User.select_requested()
+        }
+    return render_template('home.html', users=users, connect_form=connect_form)
 
 @bp.route('/logout')
 @login_required

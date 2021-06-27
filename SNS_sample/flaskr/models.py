@@ -73,6 +73,57 @@ class User(UserMixin, db.Model):
             user_connect2.status.label("joined_status_from_to")
         ).all()
 
+    @classmethod
+    def select_friends(cls):
+        UC = aliased(UserConnect)
+        return cls.query.filter(
+            UC.status == UserConnect.condition2status['accept']
+            ).join(
+                UC,
+                or_(
+                    and_(
+                        cls.id == UC.from_user_id,
+                        UC.to_user_id == current_user.get_id()
+                    ),
+                    and_(
+                        cls.id == UC.to_user_id,
+                        UC.from_user_id == current_user.get_id()
+                    )
+                )
+            ).with_entities(
+                cls.id, cls.username, cls.picture_path
+            ).all()
+
+    @classmethod
+    def select_requesting(cls):
+        UC = aliased(UserConnect)
+        return cls.query.filter(
+            UC.status == UserConnect.condition2status['request']
+            ).join(
+                UC,
+                and_(
+                    cls.id == UC.to_user_id,
+                    UC.from_user_id == current_user.get_id()
+                )
+            ).with_entities(
+                cls.id, cls.username, cls.picture_path
+            ).all()
+
+    @classmethod
+    def select_requested(cls):
+        UC = aliased(UserConnect)
+        return cls.query.filter(
+            UC.status == UserConnect.condition2status['request']
+            ).join(
+                UC,
+                and_(
+                    cls.id == UC.from_user_id,
+                    UC.to_user_id == current_user.get_id()
+                )
+            ).with_entities(
+                cls.id, cls.username, cls.picture_path
+            ).all()
+
     def save_new_password(self, new_password):
         self.password = generate_password_hash(new_password)
         self.is_active = True
