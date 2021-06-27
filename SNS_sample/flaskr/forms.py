@@ -68,3 +68,10 @@ class ChangePasswordForm(Form):
 class UserSearchForm(Form):
     username = StringField('username: ', validators=[DataRequired()])
     submit = SubmitField('Search user')
+
+
+class ConnectForm(Form):
+    connect_condition = HiddenField()
+    to_user_id = HiddenField()
+    to_username = HiddenField()
+    submit = SubmitField()

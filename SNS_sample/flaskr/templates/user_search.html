@@ -6,6 +6,11 @@
     <p>Search user</p>
 </div>
 <div class="row">
+    <div class="col-lg-8 offset-lg-4">
+        {% for message in get_flashed_messages() %}
+        {{ message }}
+        {% endfor %}
+    </div>
     <div class="col-lg-12">
         <form method="POST">
             {{ form.csrf_token }}
@@ -20,6 +25,7 @@
                 <th>#</th>
                 <th>Image</th>
                 <th>Username</th>
+                <th>Friend Request</th>
             </thead>
             <tbody>
                 {% for user in users %}
@@ -33,6 +39,56 @@
                     <th></th>
                     {% endif %}
                     <th>{{ user.username }}</th>
+                    <th>
+                        {% if user.joined_status_from_to == -1 %}
+                        Blocking
+                        {% elif user.joined_status_to_from == -1 %}
+                        Blocked
+                        {% else %}
+                            {% if user.joined_status_from_to == 2 or user.joined_status_to_from == 2 %}
+                            Friend
+                            <form action="{{url_for('app.connect_user')}}" method="POST">
+                                {{ connect_form.csrf_token }}
+                                {{ connect_form.connect_condition(value="remove") }}
+                                {{ connect_form.to_user_id(value=user.id) }}
+                                {{ connect_form.to_username(value=user.username) }}
+                                {{ connect_form.submit(class='btn btn-danger', value=("Remove")) }}
+                            </form>
+                            {% elif user.joined_status_to_from == 1 %}
+                            <form action="{{url_for('app.connect_user')}}" method="POST">
+                                {{ connect_form.csrf_token }}
+                                {{ connect_form.connect_condition(value="accept") }}
+                                {{ connect_form.to_user_id(value=user.id) }}
+                                {{ connect_form.to_username(value=user.username) }}
+                                {{ connect_form.submit(class='btn btn-success', value=("Accept")) }}
+                            </form>
+                            <form action="{{url_for('app.connect_user')}}" method="POST">
+                                {{ connect_form.csrf_token }}
+                                {{ connect_form.connect_condition(value="reject") }}
+                                {{ connect_form.to_user_id(value=user.id) }}
+                                {{ connect_form.to_username(value=user.username) }}
+                                {{ connect_form.submit(class='btn btn-danger', value=("Reject")) }}
+                            </form>
+                            {% elif user.joined_status_from_to == 1 %}
+                            Requesting
+                            {% else %}
+                            <form action="{{url_for('app.connect_user')}}" method="POST">
+                                {{ connect_form.csrf_token }}
+                                {{ connect_form.connect_condition(value="request") }}
+                                {{ connect_form.to_user_id(value=user.id) }}
+                                {{ connect_form.to_username(value=user.username) }}
+                                {{ connect_form.submit(class='btn btn-primary', value=("Request")) }}
+                            </form>
+                            {% endif %}
+                            <form action="{{url_for('app.connect_user')}}" method="POST">
+                                {{ connect_form.csrf_token }}
+                                {{ connect_form.connect_condition(value="block") }}
+                                {{ connect_form.to_user_id(value=user.id) }}
+                                {{ connect_form.to_username(value=user.username) }}
+                                {{ connect_form.submit(class='btn btn-danger', value=("Block")) }}
+                            </form>
+                        {% endif %}
+                    </th>
                 </tr>
                 {% endfor %}
             </tbody>
