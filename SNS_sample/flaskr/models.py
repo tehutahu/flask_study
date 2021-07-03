@@ -340,7 +340,7 @@ class Message(db.Model):
         db.session.commit()
 
     @classmethod
-    def get_friend_messages(cls, opponent_id):
+    def _get_friend_messages(cls, opponent_id):
         return cls.query.filter(
             or_(
                 and_(
@@ -353,3 +353,21 @@ class Message(db.Model):
                     )
             )
         ).order_by(cls.id).all()
+    
+    @classmethod
+    def update_is_read_by_ids(cls, ids):
+        with db.session.begin(subtransactions=True):
+            cls.query.filter(
+                cls.id.in_(ids)
+                ).update(
+                    {'is_read': 1},
+                    synchronize_session='fetch'
+                )
+        db.session.commit()
+
+    @classmethod
+    def get_friend_messages(cls, opponent_id):
+        messages = cls._get_friend_messages(opponent_id)
+        read_ids = [message.id for message in messages if not message.is_read and message.from_user_id == opponent_id]
+        cls.update_is_read_by_ids(read_ids)
+        return messages

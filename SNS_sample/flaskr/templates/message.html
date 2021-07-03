@@ -11,7 +11,12 @@
     </div>
     {% for message in messages %}
         {% if message.from_user_id == current_user.id %}
-        <div class="speech-bubble-self col-lg-4 offset-lg-7">
+        <div class="col-lg-1 offset-lg-6">
+            {% if message.is_read %}
+                <p>Read</p>
+            {% endif %}
+        </div>
+        <div class="speech-bubble-self col-lg-4">
             {% for splitted_message in message.message|replace_newline %}
                 <p>{{ splitted_message|urlize }}</p>
             {% endfor %}
