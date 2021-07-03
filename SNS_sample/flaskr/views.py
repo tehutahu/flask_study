@@ -1,7 +1,7 @@
 import os
 from datetime import datetime
 from flask import (
-    Blueprint, abort, request, render_template, redirect, url_for, flash, jsonify, current_app, session
+    Blueprint, abort, request, render_template, redirect, url_for, flash, jsonify, current_app, session, jsonify
 )
 from flask_login import login_user, login_required, logout_user, current_user
 from flaskr.models import (
@@ -12,6 +12,7 @@ from flaskr.forms import (
     UserForm, UserSearchForm, RegisterForm, ResetPasswordForm, 
 )
 from flaskr import db
+from flaskr.utils.message_format import make_message_format
 
 bp = Blueprint('app', __name__, url_prefix='')
 
@@ -195,6 +196,17 @@ def message(id):
         user=user, 
         messages=messages
     )
+
+@bp.route('/message_ajax', methods=['GET'])
+@login_required
+def message_ajax():
+    user_id = request.args.get('user_id', -1, type=int)
+    user = User.select_by_id(user_id)
+    not_read_messages = Message.select_not_read_messages(from_user_id=user_id, to_user_id=current_user.get_id())
+    if not_read_messages:
+        ids = [message.id for message in not_read_messages]
+        Message.update_is_read_by_ids(ids)
+    return jsonify(data=make_message_format(user, not_read_messages))
 
 @bp.app_errorhandler(404)
 def page_not_found(e):

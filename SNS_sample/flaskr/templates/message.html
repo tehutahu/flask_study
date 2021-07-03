@@ -42,7 +42,7 @@
         <div class="col-lg-7 col-md-3 col-sm-1 col-1"></div>
         {% endif %}
     {% endfor %}
-    <div class="col-lg-4 offset-lg-7 col-md-8 offset-md-4 col-sm-12 col-12">
+    <div id="message-form" class="col-lg-4 offset-lg-7 col-md-8 offset-md-4 col-sm-12 col-12">
         <form method="POST">
             {{ form.csrf_token }}
             {{ form.to_user_id(value=to_user_id) }}
@@ -51,4 +51,21 @@
         </form>
     </div>
 </div>
+{% endblock %}
+{% block script %}
+<script>
+    $(function () {
+        timer = setInterval("get_new_messages()", 5000);
+        var scroll = (document.scrollingElement || document.body)
+        scroll.scrollTop = scroll.scrollHeight
+    });
+    user_id = "{{ to_user_id }}";
+    function get_new_messages(){
+        $.getJSON("/message_ajax", {
+            user_id: user_id
+        }, function(data){
+            $('#message-form').before(data['data'])
+        });
+    };
+</script>
 {% endblock %}

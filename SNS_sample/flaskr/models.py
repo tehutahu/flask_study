@@ -371,3 +371,13 @@ class Message(db.Model):
         read_ids = [message.id for message in messages if not message.is_read and message.from_user_id == opponent_id]
         cls.update_is_read_by_ids(read_ids)
         return messages
+
+    @classmethod
+    def select_not_read_messages(cls, from_user_id, to_user_id):
+        return cls.query.filter(
+            and_(
+                cls.from_user_id == from_user_id,
+                cls.to_user_id == to_user_id,
+                cls.is_read == 0
+            )
+        ).order_by(cls.id).all()
