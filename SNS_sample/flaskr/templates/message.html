@@ -11,38 +11,38 @@
     </div>
     {% for message in messages %}
         {% if message.from_user_id == current_user.id %}
-        <div class="col-lg-1 offset-lg-6">
+        <div class="col-lg-1 offset-lg-6 col-md-1 offset-md-2 col-sm-2 offset-sm-1 col-2">
             {% if message.is_read %}
                 <p>Read</p>
             {% endif %}
         </div>
-        <div class="speech-bubble-self col-lg-4">
+        <div class="speech-bubble-self col-lg-4 col-md-8 col-sm-7 col-8">
             {% for splitted_message in message.message|replace_newline %}
                 <p>{{ splitted_message|urlize }}</p>
             {% endfor %}
         </div>
-        <div class="col-lg-1">
+        <div class="col-lg-1 col-md-1 col-sm-2 col-2">
             {% if current_user.picture_path %}
                 <img class="user-img-mini" src="{{ url_for('static', filename=current_user.picture_path) }}" alt="icon">
             {% endif %}
             <p>{{ current_user.username }}</p>
         </div>
         {% else %}
-        <div class="col-lg-1">
+        <div class="col-lg-1 col-md-1 col-sm-2 col-2">
             {% if user.picture_path %}
                 <img class="user-img-mini" src="{{ url_for('static', filename=user.picture_path) }}" alt="icon">
             {% endif %}
             <p>{{ user.username }}</p>
         </div>
-        <div class="speech-bubble-dest col-lg-4">
+        <div class="speech-bubble-dest col-lg-4 col-md-8 col-sm-8 col-9">
             {% for splitted_message in message.message|replace_newline %}
                 <p>{{ splitted_message|urlize }}</p>
             {% endfor %}
         </div>
-        <div class="col-lg-7"></div>
+        <div class="col-lg-7 col-md-3 col-sm-1 col-1"></div>
         {% endif %}
     {% endfor %}
-    <div class="col-lg-4 offset-lg-7">
+    <div class="col-lg-4 offset-lg-7 col-md-8 offset-md-4 col-sm-12 col-12">
         <form method="POST">
             {{ form.csrf_token }}
             {{ form.to_user_id(value=to_user_id) }}

@@ -19,6 +19,7 @@ table form{
 	position: relative;
 	background: #37d9e1;
 	border-radius: .4em;
+    margin-bottom: 20px;
 }
 
 .speech-bubble-self:after {
@@ -39,6 +40,7 @@ table form{
 	position: relative;
 	background: #9aabac;
 	border-radius: .4em;
+    margin-bottom: 20px;
 }
 
 .speech-bubble-dest:after {
