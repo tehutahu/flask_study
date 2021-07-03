@@ -286,8 +286,25 @@ class UserConnect(db.Model):
                 current_user_id=current_user.get_id(),
                 opponent_id=opponent_id
             )
-
         return is_success
+
+    @classmethod
+    def is_friend(cls, opponent_id):
+        user = cls.query.filter(
+            or_(
+                and_(
+                    cls.from_user_id == opponent_id,
+                    cls.to_user_id == current_user.get_id(),
+                    cls.status == 2
+                ),
+                and_(
+                    cls.from_user_id == current_user.get_id(),
+                    cls.to_user_id == opponent_id ,
+                    cls.status == 2
+                )
+            )
+        ).first()
+        return True if user else False
 
     def add_connect(self):
         with db.session.begin(subtransactions=True):
@@ -300,3 +317,39 @@ class UserConnect(db.Model):
             self.update_at = datetime.now()
         db.session.commit()
     
+class Message(db.Model):
+
+    __tablename__ = 'messages'
+
+    id = db.Column(db.Integer, primary_key=True)
+    from_user_id = db.Column(db.Integer, db.ForeignKey('users.id'), index=True)
+    to_user_id = db.Column(db.Integer, db.ForeignKey('users.id'), index=True)
+    is_read = db.Column(db.Boolean, default=False)
+    message = db.Column(db.Text)
+    create_at = db.Column(db.DateTime, nullable=False, default=datetime.now)
+    update_at = db.Column(db.DateTime, nullable=False, default=datetime.now, onupdate=datetime.now)
+
+    def __init__(self, from_user_id, to_user_id, message):
+        self.from_user_id = from_user_id
+        self.to_user_id = to_user_id
+        self.message = message
+
+    def add_message(self):
+        with db.session.begin(subtransactions=True):
+            db.session.add(self)
+        db.session.commit()
+
+    @classmethod
+    def get_friend_messages(cls, opponent_id):
+        return cls.query.filter(
+            or_(
+                and_(
+                    cls.from_user_id == current_user.get_id(),
+                    cls.to_user_id == opponent_id
+                    ),
+                and_(
+                    cls.to_user_id == current_user.get_id(),
+                    cls.from_user_id == opponent_id
+                    )
+            )
+        ).order_by(cls.id).all()

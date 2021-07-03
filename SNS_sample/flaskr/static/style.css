@@ -6,7 +6,51 @@
     width: 100px;
     height: 100px;
 }
+.user-img-mini{
+    width: 50px;
+    height: 50px;
+}
 
 table form{
     display: inline-block;
+}
+
+.speech-bubble-self {
+	position: relative;
+	background: #37d9e1;
+	border-radius: .4em;
+}
+
+.speech-bubble-self:after {
+	content: '';
+	position: absolute;
+	right: 0;
+	top: 50%;
+	width: 0;
+	height: 0;
+	border: 10px solid transparent;
+	border-left-color: #37d9e1;
+	border-right: 0;
+	margin-top: -10px;
+	margin-right: -10px;
+}
+
+.speech-bubble-dest {
+	position: relative;
+	background: #9aabac;
+	border-radius: .4em;
+}
+
+.speech-bubble-dest:after {
+	content: '';
+	position: absolute;
+	left: 0;
+	top: 50%;
+	width: 0;
+	height: 0;
+	border: 10px solid transparent;
+	border-right-color: #9aabac;
+	border-left: 0;
+	margin-top: -10px;
+	margin-left: -10px;
 }

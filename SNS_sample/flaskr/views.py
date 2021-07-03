@@ -5,11 +5,11 @@ from flask import (
 )
 from flask_login import login_user, login_required, logout_user, current_user
 from flaskr.models import (
-    PasswordResetToken, User, UserConnect
+    PasswordResetToken, User, UserConnect, Message
 )
 from flaskr.forms import (
-    ChangePasswordForm, ConnectForm, ForgotPasswordForm, LoginForm, UserForm,
-    UserSearchForm, RegisterForm, ResetPasswordForm, 
+    ChangePasswordForm, ConnectForm, ForgotPasswordForm, LoginForm, MessageForm,
+    UserForm, UserSearchForm, RegisterForm, ResetPasswordForm, 
 )
 from flaskr import db
 
@@ -171,6 +171,30 @@ def connect_user():
             abort(500)
     next = session.pop('back_url', 'app.home')
     return redirect(url_for(next))
+
+@bp.route('/message/<int:id>', methods=['GET', 'POST'])
+@login_required
+def message(id):
+    if not UserConnect.is_friend(opponent_id=id):
+        flash('Invalid access')
+        return redirect(url_for('app.home'))
+    form = MessageForm(request.form)
+    messages = Message.get_friend_messages(opponent_id=id)
+    user = User.select_by_id(id)
+    if request.method == 'POST' and form.validate():
+        Message(
+            from_user_id=current_user.get_id(),
+            to_user_id=id,
+            message=form.message.data
+        ).add_message()
+        return redirect(url_for('app.message', id=id))
+    return render_template(
+        'message.html',
+        form=form, 
+        to_user_id=id,
+        user=user, 
+        messages=messages
+    )
 
 @bp.app_errorhandler(404)
 def page_not_found(e):

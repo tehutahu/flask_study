@@ -1,12 +1,12 @@
 from wtforms.form import Form
 from wtforms.fields import (
-    StringField, PasswordField, SubmitField, HiddenField, FileField)
+    StringField, PasswordField, SubmitField, HiddenField, FileField, TextAreaField)
 from wtforms.validators import DataRequired, Email, EqualTo
 from wtforms import ValidationError
 from flask_login import current_user
 from flask import flash
 
-from flaskr.models import User
+from flaskr.models import User, UserConnect
 
 class LoginForm(Form):
     email = StringField('email: ', validators=[DataRequired(), Email()])
@@ -75,3 +75,14 @@ class ConnectForm(Form):
     to_user_id = HiddenField()
     to_username = HiddenField()
     submit = SubmitField()
+
+class MessageForm(Form):
+    to_user_id = HiddenField()
+    message = TextAreaField()
+    submit = SubmitField('Send')
+
+    def validate(self):
+        if not super(Form, self).validate():
+            return False
+        is_friend = UserConnect.is_friend(self.to_user_id.data)
+        return is_friend

@@ -33,7 +33,7 @@
                     <td></td>
                     {% endif %}
                     <td>{{ user.username }}</td>
-                    <td>Send message</td>
+                    <td><a class="btn btn-link" href="{{url_for('app.message', id=user.id)}}">Send messeage</a></td>
                 </tr>
                 {% endfor %}
             </tbody>
