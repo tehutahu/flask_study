@@ -11,7 +11,7 @@
     </div>
     {% for message in messages %}
         {% if message.from_user_id == current_user.id %}
-        <div class="col-lg-1 offset-lg-6 col-md-1 offset-md-2 col-sm-2 offset-sm-1 col-2">
+        <div id="read-tag-{{ message.id }}" class="col-lg-1 offset-lg-6 col-md-1 offset-md-2 col-sm-2 offset-sm-1 col-2">
             {% if message.is_read %}
                 <p>Read</p>
             {% endif %}
@@ -64,7 +64,14 @@
         $.getJSON("/message_ajax", {
             user_id: user_id
         }, function(data){
-            $('#message-form').before(data['data'])
+            $('#message-form').before(data['data']);
+            var is_read_ids = data['is_read_ids'];
+            is_read_ids.forEach(function(is_read_id){
+                const selector = '#read-tag-' + is_read_id;
+                if (document.querySelector(selector + '> p') == null){
+                    $(selector).append('<p>Read</p>')
+                }
+            })
         });
     };
 </script>

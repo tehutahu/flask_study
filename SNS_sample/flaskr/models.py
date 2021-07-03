@@ -373,11 +373,11 @@ class Message(db.Model):
         return messages
 
     @classmethod
-    def select_not_read_messages(cls, from_user_id, to_user_id):
+    def select_messages_by_ids(cls, from_user_id, to_user_id, is_read=True):
         return cls.query.filter(
             and_(
                 cls.from_user_id == from_user_id,
                 cls.to_user_id == to_user_id,
-                cls.is_read == 0
+                cls.is_read == int(is_read)
             )
         ).order_by(cls.id).all()

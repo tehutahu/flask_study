@@ -180,6 +180,7 @@ def message(id):
         flash('Invalid access')
         return redirect(url_for('app.home'))
     form = MessageForm(request.form)
+
     messages = Message.get_friend_messages(opponent_id=id)
     user = User.select_by_id(id)
     if request.method == 'POST' and form.validate():
@@ -202,11 +203,15 @@ def message(id):
 def message_ajax():
     user_id = request.args.get('user_id', -1, type=int)
     user = User.select_by_id(user_id)
-    not_read_messages = Message.select_not_read_messages(from_user_id=user_id, to_user_id=current_user.get_id())
+    read_messages = Message.select_messages_by_ids(from_user_id=current_user.get_id(), to_user_id=user_id, is_read=True)
+    is_read_ids = None
+    if read_messages:
+        is_read_ids = [message.id for message in read_messages]
+    not_read_messages = Message.select_messages_by_ids(from_user_id=user_id, to_user_id=current_user.get_id(), is_read=False)
     if not_read_messages:
         ids = [message.id for message in not_read_messages]
         Message.update_is_read_by_ids(ids)
-    return jsonify(data=make_message_format(user, not_read_messages))
+    return jsonify(data=make_message_format(user, not_read_messages), is_read_ids=is_read_ids)
 
 @bp.app_errorhandler(404)
 def page_not_found(e):
